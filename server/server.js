@@ -36,19 +36,36 @@ app.get('/todos/:id', (req, res) => {
     
     // Checking to see if the id is valid
     if(!ObjectID.isValid(id)) {
-        res.status(404).send();
+        return res.status(404).send();
     };
 
     Todo.findById(id).then((todo) => {
         // Sending a 404 if unable to fetch todo with id
         if(!todo) {
-            res.status(404).send();
+            return res.status(404).send();
         };
         // Happy route
         // Sending the todo, todo: todo, as an object so we can future proof it, enabling us to add to it as we see fit
         res.status(200).send({todo});
     }).catch((e) => {
         // e left out intentionally
+        res.status(400).send();
+    });
+});
+
+app.delete('/todos/:id', (req, res) => {
+    var id = req.params.id;
+    
+    if(!ObjectID.isValid(id)) {
+        return res.status(404).send()
+    }
+
+    Todo.findByIdAndRemove(id).then((todo) => {
+        if(!todo) {
+            return res.status(404).send();
+        };
+        res.status(200).send(todo);
+    }).catch((e) => {
         res.status(400).send();
     });
 });
